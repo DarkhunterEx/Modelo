@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-
+string s="";
 class trem{
 	public:
 		int f=0;
@@ -59,6 +59,58 @@ class BBTree{
             }
             n=0;
         }
+        void Pre(node **p){
+            if(*p==0)
+                return;
+            if((*p)->right){
+                //cout<<"?";
+                Pre(&(*p)->right);
+            }
+            if((*p)->left){
+                //cout<<"?";
+                Pre(&(*p)->left);
+            }
+            string o=to_string((*p)->D.f);
+            reverse(o.begin(),o.end());
+            s+=o;
+            s+=' ';
+            //cout<<(*p)->D.f<<endl;
+        }
+        void Pos(node **p){
+            if(*p==0){
+                return;
+            }
+            if((*p)->left){
+                //cout<<(*p)->D.f<<endl;
+                Pos(&(*p)->left);
+            }
+            if((*p)->right){
+                //cout<<(*p)->D.f<<endl;
+                Pos(&(*p)->right);
+            }
+            string o=to_string((*p)->D.f);
+            //reverse(o.begin(),o.end());
+            s+=o;
+            s+=' ';
+            //cout<<(*p)->D.f<<endl;
+        }
+        void In(node **p){
+            if(*p==0)
+                return;
+            //cout<<(*p)->D.f<<endl;
+            if((*p)->left){
+                //cout<<"?";
+                In(&(*p)->left);
+            }
+            string o=to_string((*p)->D.f);
+            //reverse(o.begin(),o.end());
+            s+=o;
+            s+=' ';
+            if((*p)->right){
+                //cout<<"?";
+                In(&(*p)->right);
+            }
+        }
         ~BBTree(){
             Clear(&root,n);
         }
@@ -82,13 +134,13 @@ class BBTree{
             return RMin(root);
         }
         node *RMax(node *R){
+            //cout<<R->D.f<<endl;
             if(!root){
-                //cout<<"A";
                 node *x;
                 return x;
             }
             if(R->right){
-                return RMin(R->right);
+                return RMax(R->right);
             }
             return R;
         }
@@ -132,35 +184,38 @@ class BBTree{
                 return Erase(&((*r)->left),x);
             if(x>((*r)->D).f)
                 return Erase(&((*r)->right),x);
-            n--;
-            if(!(*r)->left){
-                aux=*r;
-                *r=(*r)->right;
-                return aux;
-            }
             if(!(*r)->right){
+                //cout<<"?";
                 aux=*r;
                 *r=(*r)->left;
                 return aux;
             }
-            node *M=BBTree::RMin((*r)->right);
+            if(!(*r)->left){//cout<<"??";
+                aux=*r;
+                *r=(*r)->right;
+                return aux;
+            }
+            node *M=BBTree::RMax((*r)->left);
+            //cout<<M->D.f<<endl;
             swap(M->D,(*r)->D);
-            return Erase(&((*r)->right),x);
+            return Erase(&((*r)->left),x);
         }
         bool Erase(int x){
+            //cout<<n<<endl;
             node *aux=Erase(&root,x);
+            //cout<<n<<endl;
             if(aux!=0){
                 return true;
             }
             return false;
         }
-        node *Search(node*r,int x){
+        bool Search(node*r,int x){
             if(!r){
                 node *p;
-                return p;
+                return false;
             }
             if((r->D).f==x)
-                return r;
+                return true;
             if(x<(r->D).f)
                 return Search(r->left,x);
             return Search(r->right,x);
@@ -168,36 +223,49 @@ class BBTree{
 };
 
 int main(){
+    //freopen("12.txt","w",stdout);
+    string b;
     BBTree a;
-    char b;
     while(cin>>b){
-        if(b=='M'){
-            cout<<(a.Max())->D.f<<endl;
+        if(b=="I"){
+            int g;
+            cin>>g;
+            trem c;
+            c.f=g;
+            a.Insert(c);
         }
-        if(b=='m')
-            cout<<(a.Min())->D.f<<endl;
-        if(b=='i'){
-            int c;
-            cin>>c;
-            trem d;
-            d.f=c;
-            cout<<a.Insert(d)<<endl;
-            cout<<a.n<<endl;
+        if(b=="INFIXA"){
+            s="";
+            a.In(&a.root);
+            s.pop_back();
+            //reverse(s.begin(),s.end());
+            cout<<s<<endl;
         }
-        if(b=='e'){
-            int c;
-            cin>>c;
-            cout<<a.Erase(c)<<endl;
-            cout<<a.n<<endl;
+        if(b=="PREFIXA"){
+            s="";
+            a.Pre(&a.root);
+            s.pop_back();
+            reverse(s.begin(),s.end());
+            cout<<s<<endl;
         }
-        if(b=='c'){
-            a.Clear(&a.root,a.n);
-            cout<<a.n<<endl;
+        if(b=="POSFIXA"){
+            s="";
+            a.Pos(&a.root);
+            s.pop_back();cout<<s<<endl;
         }
-        if(b=='s'){
-            int t;
-            cin>>t;
-            cout<<a.Search(a.root,t)->D.f<<endl;
+        if(b=="P"){
+            int h;
+            cin>>h;
+            if(a.Search(a.root,h))
+                cout<<h<<" existe"<<endl;
+            else{
+                cout<<h<<" nao existe"<<endl;
+            }
+        }
+        if(b=="R"){
+            int h;
+            cin>>h;
+            a.Erase(h);
         }
     }
 }
