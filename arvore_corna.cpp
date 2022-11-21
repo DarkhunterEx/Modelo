@@ -240,7 +240,7 @@ class AVLTree{
                         (*r)->fb=0;
                         return false;
                     }
-                    if(((*r)->left)->fb==-1){
+                    if(((*r)->right)->fb==-1){
                         AVLTree::RSD(r);
                         return false;
                     }
