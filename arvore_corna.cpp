@@ -6,6 +6,7 @@ vector<string>M;
 class trem{
 	public:
 		string f="";
+		int kill=0;
 };
 
 class node{
@@ -14,7 +15,6 @@ class node{
 		int fb;
 		node *left;
 		node *right;
-		int kill;
 		static node *montaNode(trem Dat){
 			node *P=new node;
 			if(P){
@@ -22,7 +22,6 @@ class node{
 				P->left=0;
 				P->right=0;
 				P->fb=0;
-				P->kill=0;
 			}
 			return P;
 		}
@@ -107,12 +106,7 @@ class AVLTree{
                 //cout<<(*p)->D.f<<endl;
                 Pos(&(*p)->right);
             }
-            //string o=(*p)->D.f;
-            //reverse(o.begin(),o.end());
             M.push_back((*p)->D.f);
-            //s+=o;
-            //s+=' ';
-            //cout<<(*p)->D.f<<endl;
         }
         void In(node **p){
             if(*p==0)
@@ -126,7 +120,7 @@ class AVLTree{
             //reverse(o.begin(),o.end());
             s+=o;
             s+=' ';
-            s+=to_string((*p)->kill)+'\n';
+            s+=to_string((*p)->D.kill)+'\n';
             if((*p)->right){
                 //cout<<"?";
                 In(&(*p)->right);
@@ -137,10 +131,11 @@ class AVLTree{
         }
         node *Search(node*r,string x){
             if(!r){
-                return 0;
+                return NULL;
             }
-            if((r->D).f==x)
+            if((*r).D.f==x){
                 return r;
+            }
             if(x<(r->D).f)
                 return Search(r->left,x);
             return Search(r->right,x);
@@ -240,7 +235,7 @@ class AVLTree{
                         (*r)->fb=0;
                         return false;
                     }
-                    if(((*r)->left)->fb==1){
+                    if(((*r)->left)->fb==-1){
                         AVLTree::RSD(r);
                         return false;
                     }
@@ -259,7 +254,7 @@ class AVLTree{
                         (*r)->fb=0;
                         return false;
                     }
-                    if(((*r)->right)->fb==-1){
+                    if(((*r)->right)->fb==1){
                         AVLTree::RSE(r);
                         return false;
                     }
@@ -279,11 +274,11 @@ class AVLTree{
             }
             return false;
         }
-        static bool Erase(node **r,string x,node *aux){
+        static bool Erase(node **r,trem x,node **aux){
             if(!(*r)){
                 return false;
             }
-            if(x<((*r)->D).f){
+            if(x.f<((*r)->D).f){
                 if(AVLTree::Erase(&((*r)->left),x,aux)){
                     if((*r)->fb==-1){
                         (*r)->fb=0;
@@ -293,16 +288,16 @@ class AVLTree{
                         (*r)->fb=1;
                         return false;
                     }
-                    if(((*r)->right)->fb<=0){
+                    if(((*r)->right)->fb>=0){
                         AVLTree::RSE(r);
                         return true;
-                    }
+                    }//cout<<"?";
                     AVLTree::RDE(r);
                     return true;
                 }
                 return false;
             }
-            if(x>((*r)->D).f){
+            if(x.f>((*r)->D).f){
                 if(AVLTree::Erase(&((*r)->right),x,aux)){
                     if((*r)->fb==1){
                         (*r)->fb=0;
@@ -312,7 +307,7 @@ class AVLTree{
                         (*r)->fb=-1;
                         return false;
                     }
-                    if(((*r)->left)->fb>=0){
+                    if(((*r)->left)->fb<=0){
                         AVLTree::RSD(r);
                         return true;
                     }
@@ -322,17 +317,19 @@ class AVLTree{
                 return false;
             }
             if(!(*r)->left){
-                aux=*r;
+                *aux=*r;
                 *r=(*r)->right;
                 return true;
             }
             if(!(*r)->right){
-                aux=*r;
+                *aux=*r;
                 *r=(*r)->left;
                 return true;
             }
             node *MM=RMin((*r)->right);
+            //cout<<MM->D.kill<<" "<<(*r)->D.kill<<endl;
             swap(MM->D,(*r)->D);
+            //cout<<MM->D.kill<<" "<<(*r)->D.kill<<endl;
             if(AVLTree::Erase(&((*r)->right),x,aux)){
                     if((*r)->fb==1){
                         (*r)->fb=0;
@@ -342,50 +339,55 @@ class AVLTree{
                         (*r)->fb=-1;
                         return false;
                     }
-                    if(((*r)->left)->fb>=0){
+                    if(((*r)->left)->fb<=0){
                         AVLTree::RSD(r);
                         return true;
                     }
                     AVLTree::RDD(r);
                     return true;
                 }
-            return true;
+        }
+        bool Erase(trem x){
+            if(!root)return false;
+            node *aux=0;
+            AVLTree::Erase(&root,x,&aux);
+            if(aux!=0){
+                n--;
+                node::desmontaNode(aux);
+                return true;
+            }
+            return false;
         }
 };
 
 int main(){
-    freopen("12.txt","r",stdin);
+    //freopen("12.txt","r",stdin);
     //freopen("1.txt","w",stdout);
     AVLTree a;
     string b;
-    set<string>mmm;
+    set<string>MM;
     set<string>::iterator it;
     while(cin>>b){
         string c;
         cin>>c;
-        if(!a.Search(a.root,b)){
+        node *gg=a.Search(a.root,b);
+        if(!gg){
             trem x;
             x.f=b;
             a.Insert(x);
-            node *g=a.root;
-            node *M;
-            M=a.Search(g,b);
-            M->kill=1;
+            gg=a.Search(a.root,b);
         }
-        else{
-            node *M;
-            M=a.Search(a.root,b);
-            M->kill+=1;
-        }
-        mmm.insert(c);
+        gg->D.kill++;
+        MM.insert(c);
+        //mmm.insert(c);
     }
-    //cout<<b;
-    //m.Pos(&m.root);
-    for(it=mmm.begin();it!=mmm.end();it++){
-        node *auxilia;
-        a.Erase(&a.root,*it,auxilia);
+    //mmm.Pos(&mmm.root);
+    for(it=MM.begin();it!=MM.end();it++){
+        trem x;
+        x.f=*it;
+        a.Erase(x);
     }
     cout<<"HALL OF MURDERERS"<<endl;
-   //a.In(&a.root);
+    a.In(&a.root);
     cout<<s;
 }
