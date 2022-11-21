@@ -259,7 +259,7 @@ class AVLTree{
                         (*r)->fb=0;
                         return false;
                     }
-                    if(((*r)->right)->fb==1){
+                    if(((*r)->left)->fb==1){
                         AVLTree::RSE(r);
                         return false;
                     }
@@ -293,7 +293,7 @@ class AVLTree{
                         (*r)->fb=1;
                         return false;
                     }
-                    if(((*r)->left)->fb>=0){
+                    if(((*r)->right)->fb>=0){
                         AVLTree::RSE(r);
                         return true;
                     }
