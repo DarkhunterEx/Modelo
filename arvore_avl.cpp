@@ -68,12 +68,12 @@ class AVLTree{
                 //cout<<"?";
                 Clear(&(*p)->left,n);
             }
+            if(*p==root){
+                root=0;
+            }
             if(*p){
                 node::desmontaNode((*p));
                 //cout<<"???";
-            }
-            if(*p==root){
-                root=0;
             }
             n=0;
         }
