@@ -50,12 +50,12 @@ class BBTree{
                 //cout<<"?";
                 Clear(&(*p)->left,n);
             }
+            if(*p==root){
+                root=0;
+            }
             if(*p){
                 node::desmontaNode((*p));
                 //cout<<"???";
-            }
-            if(*p==root){
-                root=0;
             }
             n=0;
         }
@@ -205,6 +205,7 @@ class BBTree{
             node *aux=Erase(&root,x);
             //cout<<n<<endl;
             if(aux!=0){
+                node::desmontaNode(aux);
                 return true;
             }
             return false;
